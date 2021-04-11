@@ -27,34 +27,14 @@ plt.show()
 
 # %% [markdown]
 # ## Apply Gaussian Blur
+# Convolve the discretized Gaussian filters (3x3 & 5x5) with the input images. Use zero-pad width of 1 for 3x3 filter, and width 2 for 5x5, and *stride* = 1.
 
 # %%
-gausFilter3 = np.array([(1,2,1),(2,4,2),(1,2,1)]).reshape(3,3) / 16
-gausFilter5 = np.array([(1,4,7,4,1),
-                        (4,16,26,16,4),
-                        (7,26,41,26,7),
-                        (4,16,26,16,4),
-                        (1,4,7,4,1)]).reshape(5,5) / 273
-
-
-# %%
-t1 = np.arange(9).reshape(3,3)
-t2 = np.random.rand(3,3)
-# element-wise multiplication
-print(t1 * t2)
-
-
-# %%
-convolve2D(img1, gausFilter3, 1)
-convolve2D(img1, gausFilter5, 2)
-
 def convolve2D(image, kernel, padding, stride=1):
     outw = (image.shape[0] - kernel.shape[0] + 1) / stride
     outh = (image.shape[1] - kernel.shape[1] + 1) / stride
     # return featureMap
 
-
-# %%
 def padImage(image, pwidth=1):
     rowpad = np.zeros((1,image.shape[1]))
     res = np.append(image, rowpad, 0)
@@ -65,6 +45,17 @@ def padImage(image, pwidth=1):
     res = np.append(colpad, res, 1)
     return res
 
-res = padImage(x)
+# Discretized Gaussian filters
+gausFilter3 = np.array([(1,2,1),
+                        (2,4,2),
+                        (1,2,1)]).reshape(3,3) / 16
+gausFilter5 = np.array([(1,4,7,4,1),
+                        (4,16,26,16,4),
+                        (7,26,41,26,7),
+                        (4,16,26,16,4),
+                        (1,4,7,4,1)]).reshape(5,5) / 273
+
+convolve2D(img1, gausFilter3, 1)
+convolve2D(img1, gausFilter5, 2)
 
 
