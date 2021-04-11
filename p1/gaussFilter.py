@@ -5,7 +5,7 @@
 # 3. Apply filter
 # 4. Display resulting image (array -> jpg)
 # 
-# ## Import image
+# ## Import images
 
 # %%
 import matplotlib.pyplot as plt 
@@ -15,7 +15,7 @@ img1 = image.imread('filter1_img.jpg')
 img2 = image.imread('filter2_img.jpg')
 
 # %% [markdown]
-# ### Image Details
+# ### Image details
 # - img1: 512x512, 8-Bit image
 # - img2: 530x800, 3-channel 8-bit 
 
@@ -31,9 +31,13 @@ plt.show()
 
 # %%
 def convolve2D(image, kernel, padding, stride=1):
-    outw = (image.shape[0] - kernel.shape[0] + 1) / stride
-    outh = (image.shape[1] - kernel.shape[1] + 1) / stride
-    # return featureMap
+    outw = 1 + (image.shape[0] - kernel.shape[0] + 2*padding) / stride
+    outh = 1 + (image.shape[1] - kernel.shape[1] + 2*padding) / stride
+    img = padImage(image, padding)
+    
+    # TODO: implement discretized conovolution
+
+    return img
 
 def padImage(image, pwidth=1):
     rowpad = np.zeros((1,image.shape[1]))
@@ -46,9 +50,7 @@ def padImage(image, pwidth=1):
     return res
 
 # Discretized Gaussian filters
-gausFilter3 = np.array([(1,2,1),
-                        (2,4,2),
-                        (1,2,1)]).reshape(3,3) / 16
+gausFilter3 = np.array([(1,2,1),(2,4,2),(1,2,1)]).reshape(3,3) / 16
 gausFilter5 = np.array([(1,4,7,4,1),
                         (4,16,26,16,4),
                         (7,26,41,26,7),
