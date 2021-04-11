@@ -13,6 +13,8 @@ import matplotlib.image as image
 import numpy as np
 img1 = image.imread('filter1_img.jpg')
 img2 = image.imread('filter2_img.jpg')
+# img1 = image.imread('p1/filter1_img.jpg')
+# img2 = image.imread('p1/filter2_img.jpg')
 
 # %% [markdown]
 # ### Image details
@@ -39,7 +41,7 @@ def convolve2D(img, kernel, padding, stride=1):
             output[x,y] = np.sum(img[x:x+k, y:y+k] * kernel)
     
     return output
-
+    
 
 def padImage(image, pwidth=1):
     rowpad = np.zeros((1,image.shape[1]))
@@ -76,4 +78,19 @@ plt.show()
 
 # TODO: apply to layers in img2
 
+# %% [markdown]
+## Derivative of Gauss
+
+# %%
+def dogFilter(X):
+    gx = np.array([(1,0,-1),(2,0,-2),(1,0,-1)])
+    gy = np.array([(1,2,1),(0,0,0),(-1,-2,-1)])
+
+    return np.sqrt(convolve2D(X, gx, 1)**2 + convolve2D(X, gy, 1)**2)
+
+dog1 = dogFilter(img1)
+
+plt.subplot(1,2,1).imshow(img1, cmap='gray')
+plt.subplot(1,2,2).imshow(dog1, cmap='gray')
+plt.show()
 
