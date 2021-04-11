@@ -51,6 +51,7 @@ def padImage(image, pwidth=1):
     res = np.append(colpad, res, 1)
     return res
 
+# %%
 # Discretized Gaussian filters
 gausFilter3 = np.array([(1,2,1),(2,4,2),(1,2,1)]).reshape(3,3) / 16
 gausFilter5 = np.array([(1,4,7,4,1),
@@ -59,7 +60,20 @@ gausFilter5 = np.array([(1,4,7,4,1),
                         (4,16,26,16,4),
                         (1,4,7,4,1)]).reshape(5,5) / 273
 
-convolve2D(img1, gausFilter3, 1)
-convolve2D(img1, gausFilter5, 2)
+res3x3 = convolve2D(img1, gausFilter3, 1)
+res5x5 = convolve2D(img1, gausFilter5, 2)
+
+plt.subplot(2,2,1).imshow(img1, cmap='gray')
+plt.title('Original')
+plt.subplot(2,2,2).imshow(res3x3, cmap='gray')
+plt.title('Gaussian 3x3 kernel')
+plt.subplot(2,2,3).imshow(res5x5, cmap='gray')
+plt.title('Gaussian 5x5 kernel')
+# res2 = convolve2D(img2, gausFilter3, 1)
+# plt.subplot(2,2,3).imshow(img2)
+# plt.subplot(2,2,4).imshow(res2)
+plt.show()
+
+# TODO: apply to layers in img2
 
 
