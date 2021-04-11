@@ -1,28 +1,20 @@
-# %% [markdown]
-# ## Approach
-# 1. Import image data to array
-# 2. Create Gaussian filter
-# 3. Apply filter
-# 4. Display resulting image (array -> jpg)
-# 
-# ## Import images
-
 # %%
 import matplotlib.pyplot as plt 
 import matplotlib.image as image 
 import numpy as np
+
 img1 = image.imread('filter1_img.jpg')
 img2 = image.imread('filter2_img.jpg')
+
+# For debugging:
 # img1 = image.imread('p1/filter1_img.jpg')
 # img2 = image.imread('p1/filter2_img.jpg')
 
 # %% [markdown]
-# ### Image details
+# Test image details
 # - img1: 512x512, 8-Bit image
 # - img2: 530x800, 3-channel 8-bit 
-
-# ## Apply Gaussian Blur
-# Convolve the discretized Gaussian filters (3x3 & 5x5) with the input images. Use zero-pad width of 1 for 3x3 filter, and width 2 for 5x5, and *stride* = 1.
+# # Implement 2D convolution operator
 
 # %%
 def convolve2D(img, kernel, padding, stride=1):
@@ -53,44 +45,68 @@ def padImage(image, pwidth=1):
     res = np.append(colpad, res, 1)
     return res
 
-# %%
-# Discretized Gaussian filters
-gausFilter3 = np.array([(1,2,1),(2,4,2),(1,2,1)]).reshape(3,3) / 16
-gausFilter5 = np.array([(1,4,7,4,1),
+# Discretized Gaussian
+gausKernel3 = np.array([(1,2,1),(2,4,2),(1,2,1)]).reshape(3,3) / 16
+gausKernel5 = np.array([(1,4,7,4,1),
                         (4,16,26,16,4),
                         (7,26,41,26,7),
                         (4,16,26,16,4),
                         (1,4,7,4,1)]).reshape(5,5) / 273
+# Gaussian partial derivatives
+gx = np.array([(1,0,-1),(2,0,-2),(1,0,-1)])
+gy = np.array([(1,2,1),(0,0,0),(-1,-2,-1)])
 
-res3x3 = convolve2D(img1, gausFilter3, 1)
-res5x5 = convolve2D(img1, gausFilter5, 2)
 
-plt.subplot(2,2,1).imshow(img1, cmap='gray')
+# %% [markdown]
+# ## Gaussian filter
+# %%
+
+res3x3 = convolve2D(img1, gausKernel3, 1)
+res5x5 = convolve2D(img1, gausKernel5, 2)
+
+plt.subplot(1,3,1).imshow(img1, cmap='gray')
 plt.title('Original')
-plt.subplot(2,2,2).imshow(res3x3, cmap='gray')
+plt.subplot(1,3,2).imshow(res3x3, cmap='gray')
 plt.title('Gaussian 3x3 kernel')
-plt.subplot(2,2,3).imshow(res5x5, cmap='gray')
+plt.subplot(1,3,3).imshow(res5x5, cmap='gray')
 plt.title('Gaussian 5x5 kernel')
-# res2 = convolve2D(img2, gausFilter3, 1)
-# plt.subplot(2,2,3).imshow(img2)
-# plt.subplot(2,2,4).imshow(res2)
 plt.show()
 
 # TODO: apply to layers in img2
+# res2 = convolve2D(img2, gausFilter3, 1)
+# plt.subplot(2,2,3).imshow(img2)
+# plt.subplot(2,2,4).imshow(res2)
 
 # %% [markdown]
-## Derivative of Gauss
+# ## Derivative of Gauss filter
 
 # %%
 def dogFilter(X):
-    gx = np.array([(1,0,-1),(2,0,-2),(1,0,-1)])
-    gy = np.array([(1,2,1),(0,0,0),(-1,-2,-1)])
+    return (convolve2D(X, gx, 1), convolve2D(X, gy, 1))
 
-    return np.sqrt(convolve2D(X, gx, 1)**2 + convolve2D(X, gy, 1)**2)
+dgx1, dgy1 = dogFilter(img1)
 
-dog1 = dogFilter(img1)
-
-plt.subplot(1,2,1).imshow(img1, cmap='gray')
-plt.subplot(1,2,2).imshow(dog1, cmap='gray')
+plt.subplot(1,3,1).imshow(img1, cmap='gray')
+plt.title('Original')
+plt.subplot(1,3,2).imshow(dgx1, cmap='gray')
+plt.title('DoG Gx')
+plt.subplot(1,3,3).imshow(dgy1, cmap='gray')
+plt.title('DoG Gy')
 plt.show()
 
+# %% [markdown]
+## Sobel filter
+
+# %%
+def sobelFilter(X):
+    return np.sqrt(convolve2D(X, gx, 1)**2 + convolve2D(X, gy, 1)**2)
+
+sobel1 = sobelFilter(img1)
+
+plt.subplot(1,2,1).imshow(img1, cmap='gray')
+plt.title('Original')
+plt.subplot(1,2,2).imshow(sobel1, cmap='gray')
+plt.title('Derivative of Gauss')
+plt.show()
+
+# %%
