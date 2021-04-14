@@ -6,10 +6,6 @@ import numpy as np
 img1 = image.imread('filter1_img.jpg')
 img2 = image.imread('filter2_img.jpg')
 
-# For debugging:
-# img1 = image.imread('p1/filter1_img.jpg')
-# img2 = image.imread('p1/filter2_img.jpg')
-
 # %% [markdown]
 # Test image details
 # - img1: 512x512, 8-Bit image
