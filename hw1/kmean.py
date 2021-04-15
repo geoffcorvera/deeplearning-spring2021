@@ -37,8 +37,9 @@ class KMeans(object):
                 newCentroid = np.mean(s, axis=0)
                 self.centroids[i] = newCentroid
 
-    def showClusters(self, X):
-        colors = ['#f4d35e', '#f95738', '#0d3b66']
+    def showClusters(self, X, caption):
+        colors = ['#f4d35e', '#f95738', '#0d3b66',
+                  '#faf0ca', '#ee964b', '#d11149']
         for s, color in zip(self.clusters, colors):
             s = np.array(s)
             plt.scatter(s[:, :1], s[:, 1:], c=color)
