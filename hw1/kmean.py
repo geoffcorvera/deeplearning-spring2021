@@ -1,7 +1,7 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-data = np.genfromtxt('hw1/510_cluster_dataset.txt')
+data = np.genfromtxt('data/510_cluster_dataset.txt')
 
 plt.scatter(data[:, :1], data[:, 1:])
 plt.show()

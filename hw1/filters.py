@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as image
 import numpy as np
 
-img1 = image.imread('filter1_img.jpg')
-# img2 = image.imread('filter2_img.jpg')
+img1 = image.imread('data/filter1_img.jpg')
+# img2 = image.imread('data/filter2_img.jpg')
 
 plt.imshow(img1, cmap='gray')
 
