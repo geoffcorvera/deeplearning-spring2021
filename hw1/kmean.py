@@ -43,14 +43,31 @@ class KMeans(object):
         for s, color in zip(self.clusters, colors):
             s = np.array(s)
             plt.scatter(s[:, :1], s[:, 1:], c=color)
+
+        plt.title(caption)
         plt.show()
 
     def train(self, X, niter=10):
         for _ in range(niter):
-            model.assignClusters(X)
-            model.updateCentroids()
-            print(f'iteration {_}')
-            model.showClusters(X)
+            self.assignClusters(X)
+            self.updateCentroids()
+
+    def sumOfSquaresErr(self, X):
+        results = self.classify(X)
+        err = 0
+        for k in range(self.k):
+            cluster = X[np.where(results == k)]
+            err += np.sum(np.linalg.norm(cluster-self.centroids[k], axis=1))
+        return err
+
+    def classify(self, X):
+        k_errs = np.linalg.norm(X - self.centroids[0], axis=1)
+        for k in range(1, self.k):
+            k_dist = np.linalg.norm(X-self.centroids[k], axis=1)
+            k_errs = np.c_[k_errs, k_dist]
+
+        # select cluster with closest centroid
+        return np.apply_along_axis(np.argmin, 1, k_errs)
 
 
 # %%
