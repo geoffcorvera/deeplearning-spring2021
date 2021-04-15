@@ -37,6 +37,12 @@ class KMeans(object):
                 newCentroid = np.mean(s, axis=0)
                 self.centroids[i] = newCentroid
 
+    def showClusters(self, X):
+        colors = ['#f4d35e', '#f95738', '#0d3b66']
+        for s, color in zip(self.clusters, colors):
+            s = np.array(s)
+            plt.scatter(s[:, :1], s[:, 1:], c=color)
+        plt.show()
 
     def train(self, X, niter=10):
         for _ in range(niter):
@@ -45,3 +51,7 @@ class KMeans(object):
             print(f'iteration {_}')
             model.showClusters(X)
 
+
+# %%
+model = KMeans(data, 3)
+model.train(data)
