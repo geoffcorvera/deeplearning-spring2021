@@ -71,5 +71,19 @@ class KMeans(object):
 
 
 # %%
-model = KMeans(data, 3)
-model.train(data)
+def r_trials(k_clusters, r_trials):
+    models = [KMeans(data, k_clusters) for _ in range(r_trials)]
+    for m in models:
+        m.train(data)
+
+    wcss = np.array([m.sumOfSquaresErr(data) for m in models])
+    ibest = np.argmin(wcss)
+    bestModel = models[ibest]
+
+    caption = f'Sum of Squares Error: {wcss[ibest]}'
+    bestModel.showClusters(data, caption)
+
+
+r_trials(5, 3)
+
+# %%
