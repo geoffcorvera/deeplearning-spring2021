@@ -1,6 +1,7 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.image as image
-img1 = image.imread('Kmean_img1.jpg')
-img2 = image.imread('Kmean_img2.jpg')
+data = np.genfromtxt('hw1/510_cluster_dataset.txt')
+
+plt.scatter(data[:, :1], data[:, 1:])
+plt.show()
