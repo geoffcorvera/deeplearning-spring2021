@@ -29,3 +29,19 @@ class KMeans(object):
             newClusters[nearestCluster].append(x)
 
         self.clusters = newClusters
+
+    def updateCentroids(self):
+        for s, i in zip(self.clusters, range(self.k)):
+            s = np.array(s)
+            if s.size > 0:
+                newCentroid = np.mean(s, axis=0)
+                self.centroids[i] = newCentroid
+
+
+    def train(self, X, niter=10):
+        for _ in range(niter):
+            model.assignClusters(X)
+            model.updateCentroids()
+            print(f'iteration {_}')
+            model.showClusters(X)
+
