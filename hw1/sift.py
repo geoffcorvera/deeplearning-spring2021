@@ -1,7 +1,4 @@
 # https://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html
-# https://medium.com/repro-repo/install-opencv-4-0-1-from-source-on-macos-with-anaconda-python-3-7-to-use-sift-and-surf-9d4287d6228b
-
-# https://github.com/rmislam/PythonSIFT
 
 # %%
 import numpy as np
