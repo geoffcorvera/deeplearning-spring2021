@@ -1,4 +1,7 @@
 # https://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html
+# https://medium.com/repro-repo/install-opencv-4-0-1-from-source-on-macos-with-anaconda-python-3-7-to-use-sift-and-surf-9d4287d6228b
+
+# https://github.com/rmislam/PythonSIFT
 
 # %%
 import numpy as np
@@ -8,10 +11,10 @@ import cv2 as cv
 img1 = cv.imread('data/SIFT1_img.jpg')
 gray = cv.cvtColor(img1, cv.COLOR_BGR2GRAY)
 
-sift = cv.SIFT_create()
-keypoints = sift.detect(gray, None)
+sift = cv.xfeatures2d.SIFT_create()
+kp = sift.detect(gray, None)
 
-img1 = cv.drawKeypoints(gray, keypoints, img1)
+img1 = cv.drawKeypoints(gray, kp, img1)
 
 cv.imwrite('sift1_keypoints.jpg', img1)
 
