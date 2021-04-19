@@ -53,17 +53,16 @@ gausKernel5 = np.array([(1, 4, 7, 4, 1),
                         (7, 26, 41, 26, 7),
                         (4, 16, 26, 16, 4),
                         (1, 4, 7, 4, 1)]).reshape(5, 5) / 273
+
 # Gaussian partial derivatives
 gx = np.array([(1, 0, -1), (2, 0, -2), (1, 0, -1)])
 gy = np.array([(1, 2, 1), (0, 0, 0), (-1, -2, -1)])
 
-
 # %% [markdown]
-# ## Gaussian filter
+# Gaussian Filters
 # %%
-
-res3x3 = convolve2D(img1, gausKernel3, 1)
-res5x5 = convolve2D(img1, gausKernel5, 2)
+res3x3 = convolve2D(img1, gausKernel3, padding=1)
+res5x5 = convolve2D(img1, gausKernel5, padding=2)
 
 plt.subplot(1, 3, 1).imshow(img1, cmap='gray')
 plt.title('Original')
@@ -73,14 +72,24 @@ plt.subplot(1, 3, 3).imshow(res5x5, cmap='gray')
 plt.title('Gaussian 5x5 kernel')
 plt.show()
 
-# TODO: apply to layers in img2
-# res2 = convolve2D(img2, gausFilter3, 1)
-# plt.subplot(2,2,3).imshow(img2)
-# plt.subplot(2,2,4).imshow(res2)
-
 # %% [markdown]
-# ## Derivative of Gauss filter
+- determine the size of the resulting matrices from convolution
+- create matrix w/ 3-dimensional elements (for each color channel)
+- output/save resulting image
 
+# %%
+# TODO
+RGB = [convolve2D(img2[:,:,c], gausKernel3, 1) for c in range(3)]
+RGB = np.array(RGB)
+_,x,y = RGB.shape
+
+res = np.zeros((530,800,3))
+for i in range(x):
+    for j in range(y):
+        res[i,j] = RGB[:,i,j]
+plt.imshow(res)
+# %% [markdown]
+# ## Derivative of Gauss Filter
 # %%
 
 
@@ -123,7 +132,7 @@ sobel1 = sobelFilter(img1)
 plt.subplot(1, 2, 1).imshow(img1, cmap='gray')
 plt.title('Original')
 plt.subplot(1, 2, 2).imshow(sobel1, cmap='gray')
-plt.title('Derivative of Gauss')
+plt.title('Sobel filter')
 plt.show()
 
 # %%
