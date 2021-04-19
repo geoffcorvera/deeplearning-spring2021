@@ -53,12 +53,16 @@ gy = np.array([(1, 2, 1), (0, 0, 0), (-1, -2, -1)])
 res3x3 = convolve2D(img1, gausKernel3, padding=1)
 res5x5 = convolve2D(img1, gausKernel5, padding=2)
 
-plt.subplot(1, 3, 1).imshow(img1, cmap='gray')
+# %%
+fig = plt.figure()
+fig.add_subplot(1, 3, 1).imshow(img1, cmap='gray')
 plt.title('Original')
-plt.subplot(1, 3, 2).imshow(res3x3, cmap='gray')
-plt.title('Gaussian 3x3 kernel')
-plt.subplot(1, 3, 3).imshow(res5x5, cmap='gray')
-plt.title('Gaussian 5x5 kernel')
+fig.add_subplot(1, 3, 2).imshow(res3x3, cmap='gray')
+plt.title('3x3 kernel')
+fig.add_subplot(1, 3, 3).imshow(res5x5, cmap='gray')
+plt.title('5x5 kernel')
+fig.suptitle('Applying Gaussian Blur')
+fig.savefig('gauss1.jpg', dpi=200)
 plt.show()
 
 # TODO: apply to layers in img2
@@ -69,9 +73,9 @@ plt.show()
 def dogFilter(X):
     return (convolve2D(X, gx, 1), convolve2D(X, gy, 1))
 
-
 dgx1, dgy1 = dogFilter(img1)
 
+# %%
 plt.subplot(1, 3, 1).imshow(img1, cmap='gray')
 plt.title('Original')
 plt.subplot(1, 3, 2).imshow(dgx1, cmap='gray')
