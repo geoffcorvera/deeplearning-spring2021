@@ -4,19 +4,16 @@ import matplotlib.image as image
 import numpy as np
 
 img1 = image.imread('data/filter1_img.jpg')
-# img2 = image.imread('data/filter2_img.jpg')
+img2 = image.imread('data/filter2_img.jpg')
 
-plt.imshow(img1, cmap='gray')
 
 # %% [markdown]
 # Test image details
 # - img1: 512x512, 8-Bit image
 # - img2: 530x800, 3-channel 8-bit
-# # Implement 2D convolution operator
+# -- shape => (530, 800, 3)
 
 # %%
-
-
 def convolve2D(img, kernel, padding, stride=1):
     assert kernel.shape[0] == kernel.shape[1]
     k = kernel.shape[0]
@@ -44,7 +41,6 @@ def padImage(image, pwidth=1):
     res = np.append(res, colpad, 1)
     res = np.append(colpad, res, 1)
     return res
-
 
 # Discretized Gaussian
 gausKernel3 = np.array([(1, 2, 1), (2, 4, 2), (1, 2, 1)]).reshape(3, 3) / 16
@@ -108,11 +104,9 @@ plt.title('DoG Gy')
 plt.show()
 
 # %% [markdown]
-# Sobel filter
+## Sobel filter
 
 # %%
-
-
 def sobelFilter(X):
     return np.sqrt(convolve2D(X, gx, 1)**2 + convolve2D(X, gy, 1)**2)
 
@@ -134,5 +128,3 @@ plt.title('Original')
 plt.subplot(1, 2, 2).imshow(sobel1, cmap='gray')
 plt.title('Sobel filter')
 plt.show()
-
-# %%
