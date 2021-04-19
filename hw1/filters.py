@@ -6,12 +6,6 @@ import numpy as np
 img1 = image.imread('filter1_img.jpg')
 img2 = image.imread('filter2_img.jpg')
 
-# %% [markdown]
-# Test image details
-# - img1: 512x512, 8-Bit image
-# - img2: 530x800, 3-channel 8-bit 
-# # Implement 2D convolution operator
-
 # %%
 def convolve2D(img, kernel, padding, stride=1):
     assert kernel.shape[0] == kernel.shape[1]
@@ -53,9 +47,8 @@ gx = np.array([(1,0,-1),(2,0,-2),(1,0,-1)])
 gy = np.array([(1,2,1),(0,0,0),(-1,-2,-1)])
 
 
-# %% [markdown]
-# ## Gaussian filter
 # %%
+# Gaussian Filter
 
 res3x3 = convolve2D(img1, gausKernel3, 1)
 res5x5 = convolve2D(img1, gausKernel5, 2)
@@ -69,14 +62,10 @@ plt.title('Gaussian 5x5 kernel')
 plt.show()
 
 # TODO: apply to layers in img2
-# res2 = convolve2D(img2, gausFilter3, 1)
-# plt.subplot(2,2,3).imshow(img2)
-# plt.subplot(2,2,4).imshow(res2)
 
-# %% [markdown]
-# ## Derivative of Gauss filter
 
 # %%
+# Derivative of Gauss Filter
 def dogFilter(X):
     return (convolve2D(X, gx, 1), convolve2D(X, gy, 1))
 
@@ -90,10 +79,9 @@ plt.subplot(1,3,3).imshow(dgy1, cmap='gray')
 plt.title('DoG Gy')
 plt.show()
 
-# %% [markdown]
-## Sobel filter
 
 # %%
+# Sobel Filter
 def sobelFilter(X):
     return np.sqrt(convolve2D(X, gx, 1)**2 + convolve2D(X, gy, 1)**2)
 

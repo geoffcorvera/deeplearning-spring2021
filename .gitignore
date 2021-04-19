@@ -1,4 +1,6 @@
 .vscode
+data/
+__pycache__/
+.DS_Store
 *.jpg
 *.ipynb
-*.txt
