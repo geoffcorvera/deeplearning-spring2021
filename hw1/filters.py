@@ -107,7 +107,17 @@ plt.show()
 def sobelFilter(X):
     return np.sqrt(convolve2D(X, gx, 1)**2 + convolve2D(X, gy, 1)**2)
 
+# %%
+channels = np.array([img2[:,:,c] for c in range(3)])
+res = [sobelFilter(ch) for ch in channels]
 
+plt.subplot(2,2,1).imshow(img2)
+plt.title('Original')
+for i, ch in enumerate(res):
+    plt.subplot(2,2,i+2).imshow(ch)
+plt.show()
+
+# %%
 sobel1 = sobelFilter(img1)
 
 plt.subplot(1, 2, 1).imshow(img1, cmap='gray')
