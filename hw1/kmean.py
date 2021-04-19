@@ -1,20 +1,14 @@
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
-data = np.genfromtxt('data/510_cluster_dataset.txt')
-
-plt.scatter(data[:, :1], data[:, 1:])
-plt.show()
-
-
-# %%
+import matplotlib.image as image
 class KMeans(object):
 
     def __init__(self, X, k):
         randomIndices = np.random.choice(X.shape[0], size=k, replace=False)
 
         self.k = k
-        self.centroids = data[randomIndices, :]
+        self.centroids = X[randomIndices, :]
         self.assignClusters(X)
 
     # TODO: generate data cells from current clusters (eliminate unneeded arg in displayClusters)
@@ -71,6 +65,14 @@ class KMeans(object):
 
 
 # %%
+from kmeans3d import KM_3D as km3d
+img1 = image.imread('data/Kmean_img1.jpg')
+model = km3d(img1, k=5)
+# model.train(img1)
+
+# %%
+data = np.genfromtxt('data/510_cluster_dataset.txt')
+
 def r_trials(k_clusters, r_trials):
     models = [KMeans(data, k_clusters) for _ in range(r_trials)]
     for m in models:
@@ -86,4 +88,3 @@ def r_trials(k_clusters, r_trials):
 
 r_trials(5, 3)
 
-# %%
