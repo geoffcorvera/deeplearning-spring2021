@@ -7,3 +7,4 @@ __pycache__/
 *.txt
 data/
 __pycache__/
+*.png
