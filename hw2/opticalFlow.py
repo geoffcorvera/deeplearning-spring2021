@@ -1,4 +1,16 @@
+# %%
 import numpy as np 
+import matplotlib.image as image
+from scipy import signal
+
+# Gaussian partial derivatives
+gx = np.array([(1, 0, -1),
+               (2, 0, -2),
+               (1, 0, -1)])
+gy = np.array([(1, 2, 1),
+               (0, 0, 0),
+               (-1, -2, -1)])
+
 import matplotlib.pyplot as plt 
 
 # Identify Inputs
