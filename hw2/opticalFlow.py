@@ -20,7 +20,18 @@ assert frame1a.shape == frame2a.shape
 Ix = signal.convolve2d(frame1a, gx, boundary='symm', mode='same')
 Iy = signal.convolve2d(frame1a, gy, boundary='symm', mode='same')
 
-It = frame2a - frame2a
+def opticalFlow(ix, iy, it):
+    xx = ix**2
+    xy = ix * iy
+    yy = iy**2
+    xt = ix * it
+    yt = iy * it
+
+    invTerm = np.array([(np.sum(xx), np.sum(xy)),
+                        (np.sum(xy), np.sum(yy))])
+    invTerm = np.linalg.inv(invTerm)
+
+    return np.dot(invTerm, np.array([-np.sum(xt), -np.sum(yt)]).reshape(2,1))
 
 # %%
 import matplotlib.pyplot as plt 
