@@ -23,7 +23,24 @@ Iy = signal.convolve2d(frame1a, gy, boundary='symm', mode='same')
 # Calculate temporal derivative
 It = frame2a - frame1a
 
-(m,n) = frame1a.shape
+# %%
+# Create indices
+nrows, ncols = frame1a.shape
+
+out_w = ncols-2
+out_h = nrows-2
+
+i0 = np.repeat(np.arange(3), 3).reshape(-1,1)
+i1 = np.repeat(np.arange(out_h), out_w).reshape(1,-1)
+i = i0 + i1
+
+j0 = np.tile(np.arange(3), 3).reshape(-1,1)
+j1 = np.tile(np.arange(out_h), out_w).reshape(1,-1)
+j = j0 + j1
+
+ix_vectrz = Ix[i,j].reshape(-1,1)
+iy_vectrz = Iy[i,j].reshape(-1,1)
+it_vectrz = It[i,j].reshape(-1,1)
 
 # %%
 # For each pixel in frame 1, calculate optical flow
