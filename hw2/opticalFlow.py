@@ -2,6 +2,7 @@
 import numpy as np 
 import matplotlib.image as image
 from scipy import signal
+import math
 
 # Gaussian partial derivatives
 gx = np.array([(1, 0, -1),
@@ -24,7 +25,7 @@ Iy = signal.convolve2d(frame1a, gy, boundary='symm', mode='same')
 It = frame2a - frame1a
 
 # %%
-# Create indices
+# Create indices & vectorize per-pixel sys of equations
 nrows, ncols = frame1a.shape
 
 out_w = ncols-2
@@ -38,60 +39,51 @@ j0 = np.tile(np.arange(3), 3).reshape(-1,1)
 j1 = np.tile(np.arange(out_h), out_w).reshape(1,-1)
 j = j0 + j1
 
-ix_vectrz = Ix[i,j].reshape(-1,1)
-iy_vectrz = Iy[i,j].reshape(-1,1)
-it_vectrz = It[i,j].reshape(-1,1)
+# The columns of these vectors are the unraveled 3x3
+# square of px surrounding px(i,j)
+ix_vectrz = Ix[i,j]
+iy_vectrz = Iy[i,j]
+it_vectrz = It[i,j]
+assert ix_vectrz.shape == iy_vectrz.shape
+assert iy_vectrz.shape == it_vectrz.shape
+
 
 # %%
-# For each pixel in frame 1, calculate optical flow
+# Calculate Optical Flow
+Vx = np.zeros((out_h, out_w))
+Vy = np.zeros(Vx.shape)
 
+for i in range(ix_vectrz.shape[1]):
+    ix = ix_vectrz[:,i].reshape(-1,1)
+    iy = iy_vectrz[:,i].reshape(-1,1)
 
-# %%
-subx = Ix[0:3, 0:3]
-suby = Iy[0:3, 0:3]
-subt = It[0:3, 0:3]
+    A = np.concatenate((ix, iy), axis=1)
+    b = it_vectrz[:,i].reshape(-1,1)
 
-def opticalFlow(ix, iy, it):
-    xx = ix**2
-    xy = ix * iy
-    yy = iy**2
-    xt = ix * it
-    yt = iy * it
+    # OLS to solve for optical flow V = <vx, vy>
+    OpticalFlow_ij = np.dot(np.dot(A.T, A), -np.dot(A.T, b))
 
-    invTerm = np.array([(np.sum(xx), np.sum(xy)),
-                        (np.sum(xy), np.sum(yy))])
-    invTerm = np.linalg.inv(invTerm)
-
-    return np.dot(invTerm, np.array([-np.sum(xt), -np.sum(yt)]).reshape(2,1))
-
-
-
+    row = math.floor(i / out_w)
+    col = i % (out_w)
+    Vx[row, col] = OpticalFlow_ij[0]
+    Vy[row, col] = OpticalFlow_ij[1]
 
 
 # %%
 import matplotlib.pyplot as plt 
 
-fig, (ax_orig, ax_gx, ax_gy) = plt.subplots(3, 1, figsize=(6, 15))
+# Visualize optical flow results
+fig, (ax_orig, ax_gx, ax_gy, ax_both) = plt.subplots(4, 1, figsize=(6, 15))
 ax_orig.imshow(frame1a)
 ax_orig.set_title('Original')
 ax_orig.set_axis_off()
-ax_gx.imshow(Ix)
-ax_gx.set_title('Ix')
+ax_gx.imshow(Vx)
+ax_gx.set_title('Vx')
 ax_gx.set_axis_off()
-ax_gy.imshow(Iy)
-ax_gy.set_title('Iy')
+ax_gy.imshow(Vy)
+ax_gy.set_title('Vy')
 ax_gy.set_axis_off()
+ax_both.imshow(np.sqrt(Vx**2 + Vy**2))
+ax_both.set_title('Visualize both Vx & Vy')
+ax_both.set_axis_off()
 
-# Identify Inputs
-    ## pair of M x N images
-
-# Steps (to do):
-    # Calculate optical flow (2D vector) for each px in frame 1:
-        # Calculate temporal derivative: pixel intensity deltas over time (img2 - img1)
-
-
-# Identify Outputs
-    ## Vx (M x N): x-component of optical flow for each pixel of the original image
-    ## Vy (M x N): y-component of optical flow for each px of the original image
-    ## sqrt(Vx**2 + Vy**2) (M x N): kinda like sobel combination of x & y components
-# %%
