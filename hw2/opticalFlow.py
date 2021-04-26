@@ -1,6 +1,6 @@
 # %%
-import numpy as np 
-import matplotlib.pyplot as plt 
+import numpy as np
+import matplotlib.pyplot as plt
 import matplotlib.image as image
 from scipy import signal
 import math
@@ -25,8 +25,10 @@ Iy = signal.convolve2d(frame1a, gy, boundary='symm', mode='same')
 # Calculate temporal derivative
 It = frame2a - frame1a
 
+
 def normalize(X):
     return (X - np.min(X)) / (np.max(X) - np.min(X))
+
 
 Ix = normalize(Ix)
 Iy = normalize(Iy)
@@ -55,12 +57,13 @@ def generateIndices(X):
     out_w = ncols-2
     out_h = nrows-2
 
-    i0 = np.repeat(np.arange(3), 3).reshape(-1,1)
-    i1 = np.repeat(np.arange(out_h), out_w).reshape(1,-1)
+    i0 = np.repeat(np.arange(3), 3).reshape(-1, 1)
+    i1 = np.repeat(np.arange(out_h), out_w).reshape(1, -1)
 
-    j0 = np.tile(np.arange(3), 3).reshape(-1,1)
-    j1 = np.tile(np.arange(out_h), out_w).reshape(1,-1)
+    j0 = np.tile(np.arange(3), 3).reshape(-1, 1)
+    j1 = np.tile(np.arange(out_h), out_w).reshape(1, -1)
     return (i0+i1, j0+j1)
+
 
 # The columns of these vectors are the unraveled 3x3
 # square of px surrounding px(i,j)
@@ -81,12 +84,12 @@ out_w = frame2a.shape[1]-2
 Vx = np.zeros((out_h, out_w))
 Vy = np.zeros(Vx.shape)
 
-for i in range(ix_vctd.shape[1]):
-    ix = ix_vctd[:,i].reshape(-1,1)
-    iy = iy_vctd[:,i].reshape(-1,1)
+for i in range(ix_v.shape[1]):
+    ix = ix_v[:, i].reshape(-1, 1)
+    iy = iy_v[:, i].reshape(-1, 1)
 
     A = np.concatenate((ix, iy), axis=1)
-    b = it_vctd[:,i].reshape(-1,1)
+    b = it_v[:, i].reshape(-1, 1)
 
     # OLS to solve for optical flow V = <vx, vy>
     OpFlow = np.dot(np.dot(A.T, A), -np.dot(A.T, b))
@@ -113,25 +116,6 @@ ax_both.set_title('Visualize both Vx & Vy')
 ax_both.set_axis_off()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # %%
 # Loop implementation
 Vx = np.zeros((Ix.shape[0]-2, Ix.shape[1]-2))
@@ -139,10 +123,10 @@ Vy = np.zeros(Vx.shape)
 
 for i in range(Vx.shape[0]-2):
     for j in range(Vx.shape[1]-2):
-        ix = Ix[i:i+3, j:j+3].reshape(-1,1)
-        iy = Iy[i:i+3, j:j+3].reshape(-1,1)
+        ix = Ix[i:i+3, j:j+3].reshape(-1, 1)
+        iy = Iy[i:i+3, j:j+3].reshape(-1, 1)
         A = np.concatenate((ix, iy), axis=1)
-        b = It[i:i+3, j:j+3].reshape(-1,1)
+        b = It[i:i+3, j:j+3].reshape(-1, 1)
 
         of = np.dot(np.linalg.inv(np.dot(A.T, A)), -np.dot(A.T, b))
-        Vx[i,j], Vy[i,j] = of[:,0]
+        Vx[i, j], Vy[i, j] = of[:, 0]
