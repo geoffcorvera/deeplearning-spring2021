@@ -68,9 +68,19 @@ def generateIndices(X):
 # The columns of these vectors are the unraveled 3x3
 # square of px surrounding px(i,j)
 i, j = generateIndices(Ix)
-ix_vctd = Ix[i,j]
-iy_vctd = Iy[i,j]
-it_vctd = It[i,j]
+ix_v = Ix[i, j]
+iy_v = Iy[i, j]
+it_v = It[i, j]
+
+# %%
+xx = np.sum(ix_v**2, axis=0)
+xy = np.sum(ix_v * iy_v, axis=0)
+yy = np.sum(iy_v**2, axis=0)
+
+a1 = np.stack((xx, xy), axis=1)
+a2 = np.stack((xy, yy), axis=1)
+A = np.stack((a1, a2), axis=1)
+
 
 def decoodeCoordinates(index, width):
     return (math.floor(index / width), index % width)
