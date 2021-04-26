@@ -26,13 +26,6 @@ Iy = signal.convolve2d(frame1a, gy, boundary='symm', mode='same')
 It = frame2a - frame1a
 
 
-def normalize(X):
-    return (X - np.min(X)) / (np.max(X) - np.min(X))
-
-
-Ix = normalize(Ix)
-Iy = normalize(Iy)
-
 # %%
 # Visualize initial convolutions
 fig, (ax_orig, ax_gx, ax_gy, ax_it) = plt.subplots(4, 1, figsize=(10, 25))
@@ -51,7 +44,61 @@ ax_it.set_axis_off()
 
 
 # %%
+# Loop implementation
+Vx = np.zeros((Ix.shape[0]-2, Ix.shape[1]-2))
+Vy = np.zeros(Vx.shape)
+
+for i in range(Vx.shape[0]-2):
+    for j in range(Vx.shape[1]-2):
+        ix = Ix[i:i+3, j:j+3].reshape(-1, 1)
+        iy = Iy[i:i+3, j:j+3].reshape(-1, 1)
+        A = np.concatenate((ix, iy), axis=1)
+        b = It[i:i+3, j:j+3].reshape(-1, 1)
+
+        of = np.dot(np.linalg.pinv(np.dot(A.T, A)), -np.dot(A.T, b))
+        Vx[i, j], Vy[i, j] = of[:, 0]
+
+# %%
+
+
+def normalize(X):
+    return (X - np.min(X)) / (np.max(X) - np.min(X))
+
+
+def threshold(X):
+    return (X > np.mean(X)) * X
+
+
+imgx = threshold(Vx)
+imgy = threshold(Vy)
+
+imgx = normalize(imgx)
+imgy = normalize(imgy)
+
+# Display results
+fig, (ax_orig, ax_gx, ax_gy, ax_both) = plt.subplots(4, 1, figsize=(8, 20))
+ax_orig.imshow(frame1a)
+ax_orig.set_title('Original')
+ax_orig.set_axis_off()
+ax_gx.imshow(imgx)
+ax_gx.set_title('Vx')
+ax_gx.set_axis_off()
+ax_gy.imshow(imgy)
+ax_gy.set_title('Vy')
+ax_gy.set_axis_off()
+ax_both.imshow(np.sqrt(imgx**2 + imgy**2))
+ax_both.set_title('Visualize both Vx & Vy')
+ax_both.set_axis_off()
+
+# %% [markdown]
+# # Linear Algrebra implementation
+# Below is an implementation that attempts to avoid loops. There is an indexing bug that's
+# causing the resulting Vx and Vy calculations to rerpeat
+
+# %%
 # Vectorize 3x3 patches of our per-pixel sys of equations
+
+
 def generateIndices(X):
     nrows, ncols = X.shape
     out_w = ncols-2
@@ -67,10 +114,10 @@ def generateIndices(X):
 
 # The columns of these vectors are the unraveled 3x3
 # square of px surrounding px(i,j)
-i, j = generateIndices(Ix)
-ix_v = Ix[i, j]
-iy_v = Iy[i, j]
-it_v = It[i, j]
+imask, jmask = generateIndices(Ix)
+ix_v = Ix[imask, jmask]
+iy_v = Iy[imask, jmask]
+it_v = It[imask, jmask]
 
 # %%
 xx = np.sum(ix_v**2, axis=0)
@@ -80,63 +127,21 @@ yy = np.sum(iy_v**2, axis=0)
 a1 = np.stack((xx, xy), axis=1)
 a2 = np.stack((xy, yy), axis=1)
 A = np.stack((a1, a2), axis=1)
+A = np.apply_over_axes(np.linalg.pinv, A, 0)
 
+bx = np.sum(ix_v * it_v, axis=0)
+by = np.sum(iy_v * it_v, axis=0)
+B = np.stack((-bx, -by), axis=1)
 
-def decoodeCoordinates(index, width):
-    return (math.floor(index / width), index % width)
+Vx = list()
+Vy = list()
+# TODO: Replace janky loop implementation with linear algebra
+for a, b in zip(A, B):
+    of = np.dot(a, b)
+    Vx.append(of[0])
+    Vy.append(of[1])
 
-
-# %%
-# VECTORIZE + LOOP Implementation
-
-out_h = frame2a.shape[0]-2
-out_w = frame2a.shape[1]-2
-Vx = np.zeros((out_h, out_w))
-Vy = np.zeros(Vx.shape)
-
-for i in range(ix_v.shape[1]):
-    ix = ix_v[:, i].reshape(-1, 1)
-    iy = iy_v[:, i].reshape(-1, 1)
-
-    A = np.concatenate((ix, iy), axis=1)
-    b = it_v[:, i].reshape(-1, 1)
-
-    # OLS to solve for optical flow V = <vx, vy>
-    OpFlow = np.dot(np.dot(A.T, A), -np.dot(A.T, b))
-
-    row = math.floor(i / out_w)
-    col = i % (out_w)
-    Vx[row, col] = OpFlow[0][0]
-    Vy[row, col] = OpFlow[1][0]
+Vx = np.array(Vx).reshape(-1, frame1a.shape[1]-2)
+Vy = np.array(Vy).reshape(-1, frame1a.shape[1]-2)
 
 # %%
-# Display results
-fig, (ax_orig, ax_gx, ax_gy, ax_both) = plt.subplots(4, 1, figsize=(8, 20))
-ax_orig.imshow(frame1a)
-ax_orig.set_title('Original')
-ax_orig.set_axis_off()
-ax_gx.imshow(Vx)
-ax_gx.set_title('Vx')
-ax_gx.set_axis_off()
-ax_gy.imshow(Vy)
-ax_gy.set_title('Vy')
-ax_gy.set_axis_off()
-ax_both.imshow(np.sqrt(Vx**2 + Vy**2))
-ax_both.set_title('Visualize both Vx & Vy')
-ax_both.set_axis_off()
-
-
-# %%
-# Loop implementation
-Vx = np.zeros((Ix.shape[0]-2, Ix.shape[1]-2))
-Vy = np.zeros(Vx.shape)
-
-for i in range(Vx.shape[0]-2):
-    for j in range(Vx.shape[1]-2):
-        ix = Ix[i:i+3, j:j+3].reshape(-1, 1)
-        iy = Iy[i:i+3, j:j+3].reshape(-1, 1)
-        A = np.concatenate((ix, iy), axis=1)
-        b = It[i:i+3, j:j+3].reshape(-1, 1)
-
-        of = np.dot(np.linalg.inv(np.dot(A.T, A)), -np.dot(A.T, b))
-        Vx[i, j], Vy[i, j] = of[:, 0]
