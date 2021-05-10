@@ -4,7 +4,6 @@ __pycache__/
 .DS_Store
 *.jpg
 *.png
-*.ipynb
 *.txt
 data/
 __pycache__/
