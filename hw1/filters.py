@@ -6,8 +6,8 @@ import numpy as np
 img1 = image.imread('data/filter1_img.jpg')
 img2 = image.imread('data/filter2_img.jpg')
 
-
 # %%
+
 def convolve2D(img, kernel, padding, stride=1):
     assert kernel.shape[0] == kernel.shape[1]
     k = kernel.shape[0]
@@ -35,6 +35,7 @@ def padImage(image, pwidth=1):
     res = np.append(res, colpad, 1)
     res = np.append(colpad, res, 1)
     return res
+
 
 # Discretized Gaussian
 gausKernel3 = np.array([(1, 2, 1), (2, 4, 2), (1, 2, 1)]).reshape(3, 3) / 16
@@ -65,7 +66,25 @@ fig.suptitle('Applying Gaussian Blur')
 fig.savefig('gauss1.jpg', dpi=200)
 plt.show()
 
-# TODO: apply to layers in img2
+# %% [markdown]
+- determine the size of the resulting matrices from convolution
+- create matrix w / 3-dimensional elements(for each color channel)
+- output/save resulting image
+
+# %%
+# TODO
+RGB = [convolve2D(img2[:, :, c], gausKernel3, 1) for c in range(3)]
+RGB = np.array(RGB)
+_, x, y = RGB.shape
+
+res = np.zeros((530, 800, 3))
+for i in range(x):
+    for j in range(y):
+        res[i, j] = RGB[:, i, j]
+plt.imshow(res)
+# %% [markdown]
+# ## Derivative of Gauss Filter
+# %%
 
 
 # %%
@@ -85,17 +104,28 @@ plt.title('DoG Gy')
 plt.savefig('dog1.jpg', dpi=200)
 plt.show()
 
+<<<<<<< HEAD
 # TODO apply to img2
 
 # %%
 # Sobel Filter
+=======
+# %% [markdown]
+# Sobel filter
+
+# %%
+
+
+>>>>>>> ffff6f672f564126aec1d9f06bb01e6f35dba2a0
 def sobelFilter(X):
     return np.sqrt(convolve2D(X, gx, 1)**2 + convolve2D(X, gy, 1)**2)
 
+
 # %%
-channels = np.array([img2[:,:,c] for c in range(3)])
+channels = np.array([img2[:, :, c] for c in range(3)])
 res = [sobelFilter(ch) for ch in channels]
 
+<<<<<<< HEAD
 # %%
 fig = plt.figure()
 fig.add_subplot(2,2,1).imshow(img2)
@@ -104,6 +134,12 @@ for i, ch in enumerate(res):
     fig.add_subplot(2,2,i+2).imshow(ch)
 fig.suptitle('Sobel filter applied to 3 color channels')
 fig.savefig('sobel2.jpg', dpi=200)
+=======
+plt.subplot(2, 2, 1).imshow(img2)
+plt.title('Original')
+for i, ch in enumerate(res):
+    plt.subplot(2, 2, i+2).imshow(ch)
+>>>>>>> ffff6f672f564126aec1d9f06bb01e6f35dba2a0
 plt.show()
 
 # %%
